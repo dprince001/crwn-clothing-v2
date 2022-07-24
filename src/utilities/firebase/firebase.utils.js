@@ -1,5 +1,5 @@
 import { initializeApp } from 'firebase/app';
-import { getAuth, signInWithRedirect, signInWithPopup, GoogleAuthProvider} from 'firebase/auth';
+import { getAuth, signInWithRedirect, signInWithPopup, GoogleAuthProvider, createUserWithEmailAndPassword } from 'firebase/auth';
 
 import { getFirestore, doc, getDoc, setDoc } from 'firebase/firestore';
 
@@ -14,27 +14,32 @@ const firebaseConfig = {
   
 const firebaseApp = initializeApp(firebaseConfig);
 
-const provider = new GoogleAuthProvider();
+const googleProvider = new GoogleAuthProvider();
 
-provider.setCustomParameters({
+googleProvider.setCustomParameters({
     prompt: "select_account"
-});
+}); 
 
 export const auth = getAuth();
-export const signInWithGooglePopup = () => signInWithPopup(auth, provider);
+export const signInWithGooglePopup = () => signInWithPopup(auth, googleProvider);
  
 
 export const db = getFirestore(); //points to our external database
 
-export const createUserDocumentFromAuth = async (userAuth) => {
+export const createUserDocumentFromAuth = async (userAuth, additionalInformation = {}) => {
+
+    // we are putting additional Information parameter incase we might need to add some extra data to our data storage
+
+    if(!userAuth) return;
+
     const userDocRef = doc(db, 'users', userAuth.uid);
     // the doc method is used to retrieve the reference of a document in an object format. It takes in the (database, collection name, and a unique identifier for the data)  
-    console.log(userDocRef);
+    // console.log(userDocRef);
 
     // we can get a document using the getDoc method
     const userSnapshot = await getDoc(userDocRef);
-    console.log(userSnapshot);
-    console.log(userSnapshot.exists());
+    // console.log(userSnapshot);
+    // console.log(userSnapshot.exists());
 
     if (!userSnapshot.exists()) {
 
@@ -45,7 +50,8 @@ export const createUserDocumentFromAuth = async (userAuth) => {
             await setDoc(userDocRef, {
                 displayName,
                 email,
-                createdAt
+                createdAt,
+                ...additionalInformation
             })
         } catch(error) {
             console.log('There was an error retrieving the data', error.message);
@@ -55,5 +61,9 @@ export const createUserDocumentFromAuth = async (userAuth) => {
     return userDocRef;
 }
  
+export const createAuthUserWithEmailAndPassword = async (email, password) => {
+    if(!email || !password) return;
 
+    return await createUserWithEmailAndPassword(auth, email, password);
+}
 
