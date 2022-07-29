@@ -27,7 +27,7 @@ const SignUpForm = () => {
     }
 
     // console.log(formFields);
-
+    
     const handleSubmit = async (e) => {
         e.preventDefault();
         
@@ -35,7 +35,7 @@ const SignUpForm = () => {
             alert('passwords are different');
             return;
         }
-
+        
         try {
             const { user } = await createAuthUserWithEmailAndPassword(email, password); //authenticates
 
@@ -50,7 +50,8 @@ const SignUpForm = () => {
 
   return (
     <div className="sign-up-container">
-        <h3>Sign up with your email and password</h3>
+        <h2>Dont have an account?</h2>
+        <span>Sign up with your email and password</span>
         <form onSubmit={handleSubmit}>
             <FormInput label='Display Name' type='text' name='displayName' onChange={handleChange} value={displayName} required />
             <FormInput label='Email' type='email' name='email' value={email} onChange={handleChange} required />
