@@ -16,6 +16,10 @@
     display: flex;
     justify-content: center;
 
+    @media (max-width: 900px) {
+        font-size: 12px;
+    }
+
     &:hover {
         background-color: white;
         color: black;
